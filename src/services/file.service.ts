@@ -2,7 +2,6 @@ import { Prisma } from "@prisma/client"
 import prisma from "../core/core.prisma"
 import { IFileModel } from "../interface/file-interface"
 import fs from 'fs';
-import path from 'path';
 import mime from 'mime-types'; // Make sure to install this package
 
 /**

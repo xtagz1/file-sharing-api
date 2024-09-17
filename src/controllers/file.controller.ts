@@ -1,11 +1,7 @@
 import { Request, Response } from 'express';
 import { CoreController } from '../core/core.contoller';
-import { savetoCloud, saveToLocal } from '../helper/file.helper';
+import { ipUploadLimiter, savetoCloud, saveToLocal } from '../helper/file.helper';
 import { parseBoolean } from '../helper/boolean-converter.helper';
-import fs from 'fs';
-import path from 'path';
-import mime from 'mime-types'; // Make sure to install this package
-import prisma from '../core/core.prisma';
 import { removeFileFomeDBandStorage, retrieveFile } from '../services/file.service';
 
 export class FileController extends CoreController{
@@ -21,11 +17,15 @@ export class FileController extends CoreController{
             const file = req.file as Express.Multer.File;
             const data = req.body
             const config = process.env.CONFIG || 'local'
+            const ip = req.ip;
 
             if (!file) {
                 res.status(400).json({ error: 'No file uploaded' });
                 return;
             }
+            // function to limit upload per Ip
+            await ipUploadLimiter(file, ip)
+
             let response
 
             // save the file depending on config
@@ -59,6 +59,7 @@ export class FileController extends CoreController{
         try {
             const { publicKey } = req.params; 
 
+            // service to retrieve file
             const { mimeType, filePath } = await retrieveFile( publicKey )
         
             res.status(200).json({
@@ -86,7 +87,7 @@ export class FileController extends CoreController{
     public static async deleteFile(req: Request, res: Response): Promise<void> {
         try {
             const { privateKey } = req.params; 
-            
+            // service to delete file
             const response = await removeFileFomeDBandStorage( privateKey )
 
             res.status(200).json({

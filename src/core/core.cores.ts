@@ -6,7 +6,6 @@ export default class CorsConfig {
 
     private static corsOptions = {
         origin: [
-            'https://whipo-903tdf5j8-whipozs-projects.vercel.app',
             CorsConfig.appUrl,
         ],
         credentials: true,

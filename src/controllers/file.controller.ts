@@ -6,7 +6,7 @@ import fs from 'fs';
 import path from 'path';
 import mime from 'mime-types'; // Make sure to install this package
 import prisma from '../core/core.prisma';
-import { retrieveFile } from '../services/file.service';
+import { removeFileFomeDBandStorage, retrieveFile } from '../services/file.service';
 
 export class FileController extends CoreController{
     
@@ -76,14 +76,23 @@ export class FileController extends CoreController{
         }
     }
 
+
+    /**
+     * 
+     * @param req 
+     * @param res 
+     * @returns 
+     */
     public static async deleteFile(req: Request, res: Response): Promise<void> {
         try {
             const { privateKey } = req.params; 
-          
+            
+            const response = await removeFileFomeDBandStorage( privateKey )
+
             res.status(200).json({
                 success: true,
                 message: 'deleted file successfully',
-                response: ''
+                response
             });
             return
 

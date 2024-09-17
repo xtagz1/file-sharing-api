@@ -69,3 +69,48 @@ publicKey:string
         throw new Error('Unable to retrieve file')
     }
 }
+
+
+
+/**
+ * 
+ * @param privateKey 
+ * @returns 
+ */
+export async function removeFileFomeDBandStorage(
+    privateKey: string
+): Promise<any> {
+    try {
+        // Retrieve the file record using the privateKey
+        const fileRecord = await prisma.file.findFirst({
+            where: { privateKey }
+        });
+
+        // Check if the file record exists
+        if (!fileRecord) {
+            throw new Error('File not found');
+        }
+
+        // Read the file path from the record
+        const filePath = fileRecord.filePath;
+
+        // Check if the file exists on the filesystem
+        if (fs.existsSync(filePath)) {
+            // Delete the file from the filesystem
+            fs.unlinkSync(filePath); 
+        }
+
+        // Delete the file record from the database
+        const deletedFile = await prisma.file.delete({
+            where: { privateKey }
+        });
+
+        // Return the deleted file record or any relevant info
+        return deletedFile;
+
+    } catch (error) {
+        console.error('Prisma error:', error);
+        throw new Error('Unable to delete file');
+    }
+}
+    

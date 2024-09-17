@@ -6,9 +6,13 @@ import routes from './routes/index'
 import cookieParser from 'cookie-parser'
 import CorsConfig from './core/core.cores'
 import { logger } from './config/logger.config'
+import { FileScheduler } from './scheduler/file-scheduler'
 
 const app = express()
 const port = process.env.PORT
+
+// scheduler for deleting inactive files
+FileScheduler.startFileCleanup();
 
 app.use(CorsConfig.initializeCors())
 app.use(cookieParser())

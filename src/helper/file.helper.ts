@@ -58,15 +58,9 @@ export const savetoCloud = async (
     config: string
 ) => {
 
-    // Ensure the specific folder path exists within the root folder
-    const fullFolderPath = path.join(FOLDER);
-    if (!fs.existsSync(fullFolderPath)) {
-        fs.mkdirSync(fullFolderPath, { recursive: true });
-    }
-
     // Generate a unique filename and save the file to the folder
     const uniqueFilename = fileNameGenerator(file)
-    const filePath = path.join(fullFolderPath, uniqueFilename);
+    const filePath =  uniqueFilename
     
     //Generate public key and privateKey
     const publicKey = publicKeyGenerator(file)

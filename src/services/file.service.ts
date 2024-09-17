@@ -113,4 +113,22 @@ export async function removeFileFomeDBandStorage(
         throw new Error('Unable to delete file');
     }
 }
-    
+
+
+
+export async function getInactiveFiles() {
+    const inactiveDays = Number(process.env.INACTIVE_DAYS) || 3;
+    const date = new Date();
+    date.setDate(date.getDate() - inactiveDays); 
+
+    // Query the database for files where lastActivity is more than 'inactiveDays' ago
+    const inactiveFiles = await prisma.file.findMany({
+        where: {
+            lastActivity: {
+                lt: date,
+            },
+        },
+    });
+
+    return inactiveFiles;
+}

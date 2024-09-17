@@ -4,11 +4,16 @@ export interface IFile {
     file: Express.Multer.File
 }
 
+// models/file.model.ts
 export interface IFileModel {
-    filePath: string;           
-    publicKey: string;         
-    privateKey: string;        
-    isLocal: boolean;           
-    userId?: string | null;     
-    cloud?: CloudProvider | null; 
+    id: number;
+    userId: string | null;
+    isLocal: boolean;
+    cloud: CloudProvider | null; // Adjust CloudProvider type as necessary
+    publicKey: string;
+    privateKey: string;
+    filePath: string;
+    lastActivity: Date;
+    createdAt: Date;
+    updatedAt: Date;
 }

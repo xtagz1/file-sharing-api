@@ -56,12 +56,16 @@ publicKey:string
     const filePath = fileRecord.filePath;
     const fileExists = fs.existsSync(filePath);
 
+    // find file in project directory
     if (!fileExists) {
         throw new Error('File not found on server')
     }
 
+    // update last activity when fetching
+    await updateLastActivity(publicKey)
+
     // Get the MIME type
-    const mimeType = mime.lookup(filePath) || 'application/octet-stream'; // Default MIME type
+    const mimeType = mime.lookup(filePath) || 'application/octet-stream'; 
     return { mimeType, filePath }
         
     } catch (error) {
@@ -131,4 +135,30 @@ export async function getInactiveFiles() {
     });
 
     return inactiveFiles;
+}
+
+
+
+/**
+ * 
+ * @param publicKey 
+ * @returns 
+ */
+export async function updateLastActivity(publicKey: string): Promise<void> {
+    try {
+        const updatedFile = await prisma.file.update({
+            where: {
+                publicKey: publicKey,
+            },
+            data: {
+                lastActivity: new Date(), 
+            },
+        });
+
+        console.log(`Updated lastActivity for file with publicKey: ${publicKey}`);
+        return 
+    } catch (error) {
+        console.error('Error updating lastActivity:', error);
+        throw error; 
+    }
 }

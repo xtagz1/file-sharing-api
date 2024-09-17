@@ -2,7 +2,7 @@ import { v4 as uuidv4 } from 'uuid';
 
 
 export  function fileNameGenerator ( file:any ) {
-    return `${file.originalname}_${uuidv4()}`;
+    return `${uuidv4()}_${file.originalname}`;
 }
 
 export  function publicKeyGenerator ( file:any ) {

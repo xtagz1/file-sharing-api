@@ -16,6 +16,6 @@ router.post('', upload.single('file'), uploadFile)
 
 router.get('/:publicKey', getFile)
 
-router.get('/:privateKey', getFile)
+router.get('/:privateKey', deleteFile)
 
 export default router

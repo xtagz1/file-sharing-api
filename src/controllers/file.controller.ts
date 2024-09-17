@@ -2,9 +2,20 @@ import { Request, Response } from 'express';
 import { CoreController } from '../core/core.contoller';
 import { savetoCloud, saveToLocal } from '../helper/file.helper';
 import { parseBoolean } from '../helper/boolean-converter.helper';
+import fs from 'fs';
+import path from 'path';
+import mime from 'mime-types'; // Make sure to install this package
+import prisma from '../core/core.prisma';
+import { retrieveFile } from '../services/file.service';
 
 export class FileController extends CoreController{
     
+    /**
+     * 
+     * @param req 
+     * @param res 
+     * @returns 
+     */
     public static async uploadFile(req: Request, res: Response): Promise<void> {
         try {
             const file = req.file as Express.Multer.File;
@@ -38,26 +49,36 @@ export class FileController extends CoreController{
         }
     }
 
+    /**
+     * 
+     * @param req 
+     * @param res 
+     * @returns 
+     */
     public static async getFile(req: Request, res: Response): Promise<void> {
         try {
-          
+            const { publicKey } = req.params; 
 
+            const { mimeType, filePath } = await retrieveFile( publicKey )
+        
             res.status(200).json({
                 success: true,
                 message: 'Retrieve file successfully',
-                response: ''
+                response: {
+                    filePath,   
+                    mimeType   
+                }
             });
-            return
-
         } catch (error) {
             console.error('Error getting file', error);
-            FileController.handleError(res)
-            return
+            FileController.handleError(res);
+            return;
         }
     }
 
     public static async deleteFile(req: Request, res: Response): Promise<void> {
         try {
+            const { privateKey } = req.params; 
           
             res.status(200).json({
                 success: true,

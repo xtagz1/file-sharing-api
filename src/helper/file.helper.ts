@@ -10,12 +10,12 @@ export const saveToLocal = async (
     file: any, 
     data:any
 ) => {
-
     // Ensure the specific folder path exists within the root folder
     const fullFolderPath = path.join(FOLDER);
     if (!fs.existsSync(fullFolderPath)) {
         fs.mkdirSync(fullFolderPath, { recursive: true });
     }
+    const isLocal = true
 
     // Generate a unique filename and save the file to the folder
     const uniqueFilename = fileNameGenerator(file)
@@ -32,11 +32,10 @@ export const saveToLocal = async (
         filePath,
         publicKey,
         privateKey,
+        isLocal,
         ...data,
     }
-
     const savedfile = await saveUploadedFile(requestData)
-
     return savedfile
 }
 

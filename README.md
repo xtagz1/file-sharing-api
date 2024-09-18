@@ -15,20 +15,9 @@
     docker-compose -f docker-compose.dev.yml up
     ```
 
-2. **Set up Redis**:
-
-    ```sh
-    docker-compose up
-    ```
-
-    - This also starts the backend service. To save RAM, stop the `whipo` service:
-
-        ```sh
-        docker ps  # Find the container ID or name of the `whipo` service
-        docker stop <container_id_or_name>
         ```
 
-3. **Run the application**:
+2. **Run the application**:
 
     ```sh
     npm install

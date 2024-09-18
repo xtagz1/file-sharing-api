@@ -5,8 +5,7 @@ import { updateLastActivity } from "../../src/services/file.service"
 
 describe('updateLastActivity', () => {
     it('should update the last activity of an existing file in the DB', async () => {
-      const publicKey = 'test-public-key';  // Use a publicKey that already exists in your DB
-  
+      const publicKey = 'public_f5db1761-c8ae-43ba-92e3-433ae8e28e8a';  
       // Act: Call the function to update the last activity
       await updateLastActivity(publicKey);
   

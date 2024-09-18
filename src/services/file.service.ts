@@ -120,7 +120,7 @@ export async function removeFileFomeDBandStorage(
 
 
 export async function getInactiveFiles() {
-    const inactiveDays = Number(process.env.INACTIVE_DAYS) || 3;
+    const inactiveDays = Number(process.env.INACTIVE_DAYS) || 2;
     const date = new Date();
     date.setDate(date.getDate() - inactiveDays); 
 

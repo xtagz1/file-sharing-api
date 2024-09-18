@@ -5,13 +5,13 @@ services:
     image: postgres:latest
     container_name: file-sharing
     environment:
-      POSTGRES_USER: test
-      POSTGRES_PASSWORD: test
-      POSTGRES_DB: test
+      POSTGRES_USER: jonix
+      POSTGRES_PASSWORD: jonix
+      POSTGRES_DB: jonix
     ports:
-      - "5432:5432"
+      - "5433:5432"
     volumes:
-      - postgres_data:/var/lib/postgresql/data
+      - file-sharing:/var/lib/postgresql/data
 
 volumes:
-  file-sharing-volumes:
+  file-sharing: 

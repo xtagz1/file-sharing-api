@@ -1,10 +1,10 @@
 import fs from 'fs';
 import path from 'path';
-import { saveUploadedFile } from '../services/file.service';
-import { fileNameGenerator, privateKeyGenerator, publicKeyGenerator } from './key-generator.helper';
+import { saveUploadedFile } from '../../services/file.service';
+import { fileNameGenerator, privateKeyGenerator, publicKeyGenerator } from '../key-generator.helper';
 import mime from 'mime-types'; // Import mime-types
-import { IFileModel } from '../interface/file-interface';
-import { uploadToCloudinary } from './cloudinary/cloudinary';
+import { IFileModel } from '../../interface/file-interface';
+import { uploadToCloudinary } from '../cloudinary/cloudinary';
 
 const FOLDER = path.join(__dirname, '..', process.env.FOLDER || 'uploads');
 const fullFolderPath = path.join(FOLDER);

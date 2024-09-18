@@ -1,7 +1,6 @@
 import { Request, Response } from 'express';
 import { CoreController } from '../core/core.contoller';
-import { ipUploadLimiter, savetoCloud, saveToLocal } from '../helper/file.helper';
-import { parseBoolean } from '../helper/boolean-converter.helper';
+import { ipUploadLimiter, savetoCloud, saveToLocal } from '../helper/file-model-helper/file.helper';
 import { removeFileFomeDBandStorage, retrieveFile } from '../services/file.service';
 
 export class FileController extends CoreController{

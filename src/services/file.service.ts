@@ -48,9 +48,8 @@ export async function retrieveFile(
         const fileRecord = await prisma.file.findFirst({
             where: { publicKey: publicKey }
         });
-        
         const filePath = fileRecord?.filePath;
-       
+        
         if (!fileRecord) {
             throw new Error('File not found');
         }

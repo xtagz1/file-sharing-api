@@ -2,7 +2,9 @@ import { Prisma } from "@prisma/client"
 import prisma from "../core/core.prisma"
 import { IFileModel } from "../interface/file-interface"
 import fs from 'fs';
-import mime from 'mime-types'; // Make sure to install this package
+import mime from 'mime-types'; 
+import { v2 as cloudinary } from 'cloudinary'
+import { getPublicIdFromUrl } from "../helper/file-model-helper/file.helper";
 
 /**
  * 
@@ -12,7 +14,7 @@ import mime from 'mime-types'; // Make sure to install this package
 export async function saveUploadedFile(
 fileData:IFileModel
 ): Promise<any> {
-
+    // service to create file in database
     try {
         const uploadedFIle = await prisma.file.create({
             data: {
@@ -49,7 +51,7 @@ export async function retrieveFile(
             where: { publicKey: publicKey }
         });
         const filePath = fileRecord?.filePath;
-        
+
         if (!fileRecord) {
             throw new Error('File not found');
         }
@@ -89,7 +91,8 @@ export async function retrieveFile(
  * @returns 
  */
 export async function removeFileFomeDBandStorage(
-    privateKey: string
+    privateKey: string,
+    config: string
 ): Promise<any> {
     try {
         // Retrieve the file record using the privateKey
@@ -101,7 +104,6 @@ export async function removeFileFomeDBandStorage(
         if (!fileRecord) {
             throw new Error('File not found');
         }
-
         // Read the file path from the record
         const filePath = fileRecord.filePath;
 
@@ -111,6 +113,19 @@ export async function removeFileFomeDBandStorage(
             fs.unlinkSync(filePath); 
         }
 
+        if (config === 'cloudinary') {
+            const publicId = getPublicIdFromUrl(filePath); 
+            // Delete the file from Cloudinary
+            await new Promise((resolve, reject) => {
+                cloudinary.uploader.destroy(publicId, (error:any, result:any) => {
+                    if (error) {
+                        return reject(new Error('Unable to delete file from Cloudinary'));
+                    }
+                    resolve(result);
+                });
+            });
+        }
+         
         // Delete the file record from the database
         const deletedFile = await prisma.file.delete({
             where: { privateKey }

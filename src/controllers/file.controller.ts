@@ -85,8 +85,9 @@ export class FileController extends CoreController{
     public static async deleteFile(req: Request, res: Response): Promise<void> {
         try {
             const { privateKey } = req.params; 
+            const config = process.env.CONFIG || 'local'
             // service to delete file
-            const response = await removeFileFomeDBandStorage( privateKey )
+            const response = await removeFileFomeDBandStorage( privateKey, config )
 
             res.status(200).json({
                 success: true,

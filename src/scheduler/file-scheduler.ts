@@ -3,6 +3,7 @@ import { getInactiveFiles, removeFileFomeDBandStorage } from '../services/file.s
 export class FileScheduler {
     // Schedule a task to run once a day 
     public static startFileCleanup() {
+         const config = process.env.CONFIG || 'local'
         cron.schedule( process.env.FILE_CLEANUP_CRON_EXPRESSION || "0 0 * * *", async () => {
             try {
                 console.log('Running scheduled task to delete expired files...');
@@ -11,7 +12,7 @@ export class FileScheduler {
                 const inactiveFiles = await getInactiveFiles();
 
                 for (const file of inactiveFiles) {
-                    await removeFileFomeDBandStorage(file.privateKey);
+                    await removeFileFomeDBandStorage(file.privateKey, config);
                     console.log(`Deleted file with privateKey: ${file.privateKey}`);
                 }
 

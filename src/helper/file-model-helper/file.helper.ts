@@ -2,7 +2,6 @@ import fs from 'fs';
 import path from 'path';
 import { saveUploadedFile } from '../../services/file.service';
 import { fileNameGenerator, privateKeyGenerator, publicKeyGenerator } from '../key-generator.helper';
-import mime from 'mime-types'; // Import mime-types
 import { IFileModel } from '../../interface/file-interface';
 import { uploadToCloudinary } from '../cloudinary/cloudinary';
 
@@ -137,3 +136,8 @@ export const ipUploadLimiter = async (
 };
 
 
+export const getPublicIdFromUrl = (cloudinaryUrl: string): string =>{
+    const regex = /\/([^/]+)\.[a-z]+$/;  // Example: /uploads/abcd1234.jpg
+    const match = cloudinaryUrl.match(regex);
+    return match ? match[1] : '';
+}

@@ -1,4 +1,4 @@
-import { CloudProvider } from "@prisma/client";
+import { Config } from "@prisma/client";
 
 export interface IFile {
     file: Express.Multer.File
@@ -6,14 +6,10 @@ export interface IFile {
 
 // models/file.model.ts
 export interface IFileModel {
-    id: number;
     userId: string | null;
     isLocal: boolean;
-    cloud: CloudProvider | null; // Adjust CloudProvider type as necessary
+    config: Config | null; // Adjust CloudProvider type as necessary
     publicKey: string;
     privateKey: string;
     filePath: string;
-    lastActivity: Date;
-    createdAt: Date;
-    updatedAt: Date;
 }

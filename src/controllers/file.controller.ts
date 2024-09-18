@@ -27,10 +27,9 @@ export class FileController extends CoreController{
             await ipUploadLimiter(file, ip)
 
             let response
-
             // save the file depending on config
             if(config === 'local'){
-             response = await saveToLocal(file, data)
+             response = await saveToLocal(file, data, config)
             }else{
              response = await savetoCloud(file, data, config)
             }

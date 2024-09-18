@@ -21,7 +21,7 @@ fileData:IFileModel
                 privateKey: fileData.privateKey,
                 isLocal: Boolean(fileData.isLocal),
                 userId: fileData.userId || null,
-                cloud: fileData.cloud || null
+                config: fileData.config || null
             }
         })
         return uploadedFIle

@@ -21,7 +21,7 @@ fileData:IFileModel
                 privateKey: fileData.privateKey,
                 isLocal: Boolean(fileData.isLocal),
                 userId: fileData.userId || null,
-                config: fileData.config || null
+                config: fileData.config || null,
             }
         })
         return uploadedFIle
@@ -32,44 +32,53 @@ fileData:IFileModel
     }
 }
 
+
+
 /**
  * 
  * @param publicKey 
  * @returns 
  */
 export async function retrieveFile(
-publicKey:string
-):Promise<any>{
+    publicKey: string,
+    config: string
+): Promise<any> {
     try {
-    // Retrieve the file using the public key
-    const fileRecord = await prisma.file.findFirst({
-        where: { publicKey:publicKey }
-    });
+        // Retrieve the file using the public key
+        const fileRecord = await prisma.file.findFirst({
+            where: { publicKey: publicKey }
+        });
+        
+        const filePath = fileRecord?.filePath;
+       
+        if (!fileRecord) {
+            throw new Error('File not found');
+        }
 
-    // Check if the file record exists in db
-    if (!fileRecord) {
-        throw new Error('File not found')
-    }
-    
-    // Read the file from the filesystem
-    const filePath = fileRecord.filePath;
-    const fileExists = fs.existsSync(filePath);
+        // If the file is stored locally
+        if (config === 'local') {
+            const filePath = fileRecord?.filePath;
+            const fileExists = fs.existsSync(filePath);
+            const mimeType = mime.lookup(filePath) || 'application/octet-stream';
+            // Check if the file exists in the filesystem
+            if (!fileExists) {
+                throw new Error('File not found on server');
+            }
+            // Update last activity when fetching
+            await updateLastActivity(publicKey);
 
-    // find file in project directory
-    if (!fileExists) {
-        throw new Error('File not found on server')
-    }
-
-    // update last activity when fetching
-    await updateLastActivity(publicKey)
-
-    // Get the MIME type
-    const mimeType = mime.lookup(filePath) || 'application/octet-stream'; 
-    return { mimeType, filePath }
+            return { mimeType, filePath };
+        // if file stored in cloud
+        } else {
+            const mimeType = mime.lookup(fileRecord?.filePath) || 'application/octet-stream';
+            // Update last activity when fetching
+            await updateLastActivity(publicKey);
+            return { mimeType, filePath }; 
+        }
         
     } catch (error) {
-        console.error('Prisma error:', error);
-        throw new Error('Unable to retrieve file')
+        console.error('Error retrieving file:', error);
+        throw new Error('Unable to retrieve file');
     }
 }
 
@@ -143,6 +152,7 @@ export async function getInactiveFiles() {
  * @param publicKey 
  * @returns 
  */
+// update last activity base on Get request
 export async function updateLastActivity(publicKey: string): Promise<void> {
     try {
         const updatedFile = await prisma.file.update({

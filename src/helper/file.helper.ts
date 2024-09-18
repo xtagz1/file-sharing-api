@@ -2,8 +2,9 @@ import fs from 'fs';
 import path from 'path';
 import { saveUploadedFile } from '../services/file.service';
 import { fileNameGenerator, privateKeyGenerator, publicKeyGenerator } from './key-generator.helper';
-import { v2 as cloudinary } from 'cloudinary'
+import mime from 'mime-types'; // Import mime-types
 import { IFileModel } from '../interface/file-interface';
+import { uploadToCloudinary } from './cloudinary/cloudinary';
 
 const FOLDER = path.join(__dirname, '..', process.env.FOLDER || 'uploads');
 const fullFolderPath = path.join(FOLDER);
@@ -17,38 +18,41 @@ const fullFolderPath = path.join(FOLDER);
  */
 export const saveToLocal = async (
     file: any, 
-    data:any,
-    config:any
+    data: any,
+    config: any
 ) => {
     // Ensure the specific folder path exists within the root folder
-
     if (!fs.existsSync(fullFolderPath)) {
         fs.mkdirSync(fullFolderPath, { recursive: true });
     }
-    const isLocal = true
+    
+    const isLocal = true;
 
     // Generate a unique filename and save the file to the folder
-    const uniqueFilename = fileNameGenerator(file)
+    const uniqueFilename = fileNameGenerator(file);
     const filePath = path.join(fullFolderPath, uniqueFilename);
-    
-    //Generate public key and privateKey
-    const publicKey = publicKeyGenerator(file)
-    const privateKey = privateKeyGenerator(file)
+
+    // Generate public key and private key
+    const publicKey = publicKeyGenerator(file);
+    const privateKey = privateKeyGenerator(file);
 
     // Write the file to the local folder
     await fs.promises.writeFile(filePath, file.buffer);
-    
+
+
     const requestData = {
         filePath,
         publicKey,
         privateKey,
         isLocal,
         ...data,
-        config:config || 'local'
-    }
-    const savedfile = await saveUploadedFile(requestData)
-    return savedfile
-}
+        config: config || 'local',
+    };
+
+    const savedFile = await saveUploadedFile(requestData);
+    return savedFile;
+};
+
 
 
 /**
@@ -71,36 +75,17 @@ export const savetoCloud = async (
     const publicKey = publicKeyGenerator(file);
     const privateKey = privateKeyGenerator(file);
 
-    // Configure Cloudinary
-    cloudinary.config({
-        cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
-        api_key: process.env.CLOUDINARY_API_KEY,
-        api_secret: process.env.CLOUDINARY_API_SECRET,
-    });
+    let uploadedFile
 
-    // Upload the file to Cloudinary from buffer
-    const uploadedFile:any = await new Promise((resolve, reject) => {
-        const stream = cloudinary.uploader.upload_stream(
-            {
-                public_id: uniqueFilename,
-                folder: process.env.CLOUDINARY_FOLDER || 'upload',
-                resource_type: 'auto',
-            },
-            (error, result) => {
-                if (error) {
-                    return reject(error);
-                }
-                resolve(result);
-            }
-        );
-
-        // Write the buffer to the stream
-        stream.end(file.buffer);
-    });
-
+    if(config === 'cloudinary'){
+    uploadedFile = await uploadToCloudinary(uniqueFilename, file)
+    }else{
+        throw new Error('Other providers are not supported yet')
+    }
+    
     // Prepare the data to save to your database
     const fileData: IFileModel = {
-        filePath: uploadedFile.secure_url, 
+        filePath: uploadedFile, 
         publicKey,
         privateKey,
         isLocal: false,

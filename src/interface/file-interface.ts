@@ -11,5 +11,5 @@ export interface IFileModel {
     config: Config | null; // Adjust CloudProvider type as necessary
     publicKey: string;
     privateKey: string;
-    filePath: string;
+    filePath: any;
 }

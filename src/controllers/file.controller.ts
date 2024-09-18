@@ -57,9 +57,9 @@ export class FileController extends CoreController{
     public static async getFile(req: Request, res: Response): Promise<void> {
         try {
             const { publicKey } = req.params; 
-
+            const config = process.env.CONFIG || 'local'
             // service to retrieve file
-            const { mimeType, filePath } = await retrieveFile( publicKey )
+            const { mimeType, filePath } = await retrieveFile( publicKey, config )
         
             res.status(200).json({
                 success: true,

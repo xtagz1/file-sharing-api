@@ -34,7 +34,6 @@ model File {
   publicKey    String   @unique
   privateKey   String   @unique
   filePath     String
-  mimeType     String?
   lastActivity DateTime @updatedAt
   createdAt    DateTime @default(now())
   updatedAt    DateTime @updatedAt

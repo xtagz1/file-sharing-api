@@ -61,25 +61,36 @@ export class FileController extends CoreController{
             const { publicKey } = req.params; 
             const config = process.env.CONFIG || 'local';
             
-            // service to retrieve file
+            // Service to retrieve file
             const { mimeType, filePath } = await retrieveFile(publicKey, config);
     
-            // Set headers for file download
-            res.setHeader('Content-Type', mimeType);
-            res.setHeader('Content-Disposition', `attachment; filename="${path.basename(filePath)}"`);
+            if (config === 'local') {
+                // If the file is stored locally, stream it to the client
+                res.setHeader('Content-Type', mimeType);
+                res.setHeader('Content-Disposition', `attachment; filename="${path.basename(filePath)}"`);
     
-            // Stream the file to the response
-            const fileStream = fs.createReadStream(filePath);
-            fileStream.pipe(res);
+                const fileStream = fs.createReadStream(filePath);
+                fileStream.pipe(res);
     
-            // Handle errors in the stream
-            fileStream.on('error', (error:any) => {
-                console.error('Error streaming file:', error);
-                res.status(500).json({
-                    success: false,
-                    message: 'Error streaming file',
+                fileStream.on('error', (error:any) => {
+                    console.error('Error streaming file:', error);
+                    res.status(500).json({
+                        success: false,
+                        message: 'Error streaming file',
+                    });
                 });
-            });
+    
+            } else {
+                // If the file is stored in the cloud, send the cloud URL
+                res.status(200).json({
+                    success: true,
+                    message: 'Retrieve file successfully',
+                    response: {
+                        filePath,  
+                        mimeType   
+                    }
+                });
+            }
     
         } catch (error) {
             console.error('Error getting file', error);

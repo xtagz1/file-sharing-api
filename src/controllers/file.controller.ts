@@ -2,6 +2,9 @@ import { Request, Response } from 'express';
 import { CoreController } from '../core/core.contoller';
 import { ipUploadLimiter, savetoCloud, saveToLocal } from '../helper/file-model-helper/file.helper';
 import { removeFileFomeDBandStorage, retrieveFile } from '../services/file.service';
+import fs from 'fs';
+import path from 'path';
+import mime from 'mime-types';
 
 export class FileController extends CoreController{
     
@@ -56,22 +59,31 @@ export class FileController extends CoreController{
     public static async getFile(req: Request, res: Response): Promise<void> {
         try {
             const { publicKey } = req.params; 
-            const config = process.env.CONFIG || 'local'
+            const config = process.env.CONFIG || 'local';
+            
             // service to retrieve file
-            const { mimeType, filePath } = await retrieveFile( publicKey, config )
-        
-            res.status(200).json({
-                success: true,
-                message: 'Retrieve file successfully',
-                response: {
-                    filePath,   
-                    mimeType   
-                }
+            const { mimeType, filePath } = await retrieveFile(publicKey, config);
+    
+            // Set headers for file download
+            res.setHeader('Content-Type', mimeType);
+            res.setHeader('Content-Disposition', `attachment; filename="${path.basename(filePath)}"`);
+    
+            // Stream the file to the response
+            const fileStream = fs.createReadStream(filePath);
+            fileStream.pipe(res);
+    
+            // Handle errors in the stream
+            fileStream.on('error', (error:any) => {
+                console.error('Error streaming file:', error);
+                res.status(500).json({
+                    success: false,
+                    message: 'Error streaming file',
+                });
             });
+    
         } catch (error) {
             console.error('Error getting file', error);
             FileController.handleError(res);
-            return;
         }
     }
 

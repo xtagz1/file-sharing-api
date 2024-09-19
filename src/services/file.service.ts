@@ -113,7 +113,7 @@ export async function removeFileFomeDBandStorage(
             fs.unlinkSync(filePath); 
         }
 
-        if (config === 'cloudinary') {
+        if (fileRecord?.config === 'cloudinary') {
             const publicId = getPublicIdFromUrl(filePath); 
             // Delete the file from Cloudinary
             await new Promise((resolve, reject) => {

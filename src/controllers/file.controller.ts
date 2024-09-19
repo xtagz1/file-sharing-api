@@ -59,12 +59,11 @@ export class FileController extends CoreController{
     public static async getFile(req: Request, res: Response): Promise<void> {
         try {
             const { publicKey } = req.params; 
-            const config = process.env.CONFIG || 'local';
             
             // Service to retrieve file
-            const { mimeType, filePath } = await retrieveFile(publicKey, config);
+            const { mimeType, filePath, fileConfig } = await retrieveFile(publicKey);
     
-            if (config === 'local') {
+            if (fileConfig === 'local') {
                 // If the file is stored locally, stream it to the client
                 res.setHeader('Content-Type', mimeType);
                 res.setHeader('Content-Disposition', `attachment; filename="${path.basename(filePath)}"`);

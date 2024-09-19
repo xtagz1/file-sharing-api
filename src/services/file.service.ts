@@ -43,7 +43,6 @@ fileData:IFileModel
  */
 export async function retrieveFile(
     publicKey: string,
-    config: string
 ): Promise<any> {
     try {
         // Retrieve the file using the public key
@@ -51,13 +50,13 @@ export async function retrieveFile(
             where: { publicKey: publicKey }
         });
         const filePath = fileRecord?.filePath;
-
+        const fileConfig = fileRecord?.config
         if (!fileRecord) {
             throw new Error('File not found');
         }
 
         // If the file is stored locally
-        if (config === 'local') {
+        if (fileConfig === 'local') {
             const filePath = fileRecord?.filePath;
             const fileExists = fs.existsSync(filePath);
             const mimeType = mime.lookup(filePath) || 'application/octet-stream';
@@ -68,13 +67,13 @@ export async function retrieveFile(
             // Update last activity when fetching
             await updateLastActivity(publicKey);
 
-            return { mimeType, filePath };
+            return { mimeType, filePath, fileConfig };
         // if file stored in cloud
         } else {
             const mimeType = mime.lookup(fileRecord?.filePath) || 'application/octet-stream';
             // Update last activity when fetching
             await updateLastActivity(publicKey);
-            return { mimeType, filePath }; 
+            return { mimeType, filePath, fileConfig }; 
         }
         
     } catch (error) {

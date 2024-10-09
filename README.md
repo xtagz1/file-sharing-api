@@ -57,7 +57,7 @@ PORT=8000
 APP_URL=""
 #  use for cors to set the fe url in production environment
 
-DATABASE_URL="postgresql://jonix:jonix@13.210.14.98:5433/jonix?schema=public" 
+DATABASE_URL="postgresql://jonix:jonix@13.210.89.55:5433/jonix?schema=public" 
 <!-- Please use this database if you are having a hard time setting up docker or local db-->
 # db url you can use my deployed db server for ease of use
 
